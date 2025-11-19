@@ -153,9 +153,10 @@ export default function Upload() {
                   <h3 className="text-green-400 font-semibold mb-2">Your Game, Your Control</h3>
                   <ul className="text-gray-300 text-sm space-y-1">
                     <li>• You have full control to edit or delete your uploaded games</li>
-                    <li>• Your files are securely stored on enterprise cloud infrastructure</li>
-                    <li>• We never sell, share, or modify your game files</li>
-                    <li>• Our only moderation: removing sexually explicit content (to protect underage developers)</li>
+                    <li>• Your files are stored on our secure cloud infrastructure</li>
+                    <li>• We only access files to delete sexually explicit content to allow all age game devs</li>
+                    <li>• We never modify, read, or analyze your game files</li>
+                    <li>• Standard file hosting - same as any game platform</li>
                     <li>• Violent or offensive content is allowed - we respect community voting</li>
                   </ul>
                 </div>
