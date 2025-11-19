@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import GamePlayer from "@/components/GamePlayer";
 
 async function getGame(slug: string) {
   const res = await fetch(
@@ -56,12 +57,7 @@ export default async function PlayGame(props: {
         {/* Game Player */}
         <div className="bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-purple-500">
           <div className="aspect-video bg-black rounded overflow-hidden">
-            <iframe
-              src={game.blob_url}
-              className="w-full h-full border-0"
-              allowFullScreen
-              title={game.title}
-            />
+            <GamePlayer zipUrl={game.blob_url} title={game.title} />
           </div>
         </div>
 
