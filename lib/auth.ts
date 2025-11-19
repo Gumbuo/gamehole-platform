@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
           SELECT * FROM users WHERE email = ${user.email}
         `;
 
-        if (existingUser.rows.length === 0) {
+        if (existingUser.length === 0) {
           // Create new user
           await sql`
             INSERT INTO users (email, name, avatar, github_id)
@@ -40,8 +40,8 @@ export const authOptions: NextAuthOptions = {
             SELECT id, email, name, avatar FROM users WHERE email = ${session.user.email}
           `;
 
-          if (user.rows.length > 0) {
-            session.user.id = user.rows[0].id;
+          if (user.length > 0) {
+            session.user.id = user[0].id;
           }
         } catch (error) {
           console.error("Error in session callback:", error);

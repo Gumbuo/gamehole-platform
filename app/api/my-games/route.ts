@@ -16,11 +16,11 @@ export async function GET() {
       SELECT id FROM users WHERE email = ${session.user.email}
     `;
 
-    if (userResult.rows.length === 0) {
+    if (userResult.length === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const games = await getUserGames(userResult.rows[0].id);
+    const games = await getUserGames(userResult[0].id);
 
     return NextResponse.json({ games });
   } catch (error) {

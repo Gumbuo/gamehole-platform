@@ -57,7 +57,7 @@ export async function getUser(email: string) {
   const result = await sql`
     SELECT * FROM users WHERE email = ${email}
   `;
-  return result.rows[0];
+  return result[0];
 }
 
 export async function getUserGames(userId: number) {
@@ -66,7 +66,7 @@ export async function getUserGames(userId: number) {
     WHERE user_id = ${userId}
     ORDER BY created_at DESC
   `;
-  return result.rows;
+  return result;
 }
 
 export async function getGame(slug: string) {
@@ -76,7 +76,7 @@ export async function getGame(slug: string) {
     JOIN users u ON g.user_id = u.id
     WHERE g.slug = ${slug} AND g.is_published = true
   `;
-  return result.rows[0];
+  return result[0];
 }
 
 export async function getAllGames(limit = 50) {
@@ -88,7 +88,7 @@ export async function getAllGames(limit = 50) {
     ORDER BY g.created_at DESC
     LIMIT ${limit}
   `;
-  return result.rows;
+  return result;
 }
 
 export async function incrementGameViews(slug: string) {

@@ -17,11 +17,11 @@ export async function POST(request: NextRequest) {
       SELECT id FROM users WHERE email = ${session.user.email}
     `;
 
-    if (userResult.rows.length === 0) {
+    if (userResult.length === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const userId = userResult.rows[0].id;
+    const userId = userResult[0].id;
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       SELECT id FROM games WHERE slug = ${slug}
     `;
 
-    if (existingGame.rows.length > 0) {
+    if (existingGame.length > 0) {
       return NextResponse.json(
         { error: "A game with this slug already exists" },
         { status: 409 }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      game: result.rows[0],
+      game: result[0],
     });
   } catch (error) {
     console.error("Upload error:", error);
