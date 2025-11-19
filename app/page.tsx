@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
@@ -21,9 +23,20 @@ export default function Home() {
             Built by developers, for developers. Upload your HTML5 games, Unity WebGL builds,
             or any web-based game and share them with the world instantly.
           </p>
-          <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
-            Coming Soon - Join Waitlist
-          </button>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/games"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+            >
+              Browse Games
+            </Link>
+            <Link
+              href="/dashboard"
+              className="bg-gray-700 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-600 transition-all transform hover:scale-105"
+            >
+              Developer Dashboard
+            </Link>
+          </div>
         </section>
 
         {/* Features Grid */}
@@ -83,18 +96,15 @@ export default function Home() {
             Ready to Share Your Games?
           </h2>
           <p className="text-gray-300 mb-6">
-            We're building something special for the indie game dev community.
-            Sign up for early access and be the first to know when we launch.
+            Join the indie game dev community. Upload your games for free and share them with the world.
           </p>
           <div className="flex gap-4 justify-center">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="px-6 py-3 rounded-lg bg-gray-800 border border-purple-500 text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 w-64"
-            />
-            <button className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-              Notify Me
-            </button>
+            <Link
+              href="/dashboard"
+              className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            >
+              Get Started - It's Free!
+            </Link>
           </div>
         </section>
 
