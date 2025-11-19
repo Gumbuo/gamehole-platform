@@ -20,6 +20,8 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
     category: "Other",
     credits: "",
   });
+  const [gameFile, setGameFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     params.then((p) => setSlug(p.slug));
@@ -61,18 +63,48 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
     setSaving(true);
 
     try {
+      let newBlobUrl = null;
+
+      // If a new game file is uploaded, upload it first
+      if (gameFile) {
+        setUploading(true);
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", gameFile);
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        const uploadResult = await uploadRes.json();
+
+        if (!uploadRes.ok) {
+          throw new Error(uploadResult.error || "Failed to upload game file");
+        }
+
+        newBlobUrl = uploadResult.blobUrl;
+        setUploading(false);
+      }
+
+      // Update game metadata (and blob_url if new file was uploaded)
+      const updateData: any = {
+        slug: slug,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        credits: formData.credits,
+      };
+
+      if (newBlobUrl) {
+        updateData.blob_url = newBlobUrl;
+      }
+
       const res = await fetch("/api/update-game", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          slug: slug,
-          title: formData.title,
-          description: formData.description,
-          category: formData.category,
-          credits: formData.credits,
-        }),
+        body: JSON.stringify(updateData),
       });
 
       const result = await res.json();
@@ -90,6 +122,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
       setError(err.message || "Update failed");
     } finally {
       setSaving(false);
+      setUploading(false);
     }
   };
 
@@ -221,6 +254,26 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                   <option value="Casual">Casual</option>
                   <option value="Other">Other</option>
                 </select>
+              </div>
+
+              <div className="border-t border-gray-600 pt-6">
+                <label className="block text-white font-semibold mb-2">
+                  Update Game Files (Optional)
+                </label>
+                <input
+                  type="file"
+                  accept=".zip"
+                  onChange={(e) => setGameFile(e.target.files?.[0] || null)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white file:cursor-pointer hover:file:bg-cyan-700"
+                />
+                <p className="text-gray-400 text-sm mt-2">
+                  Upload a new ZIP file to update your game. Leave empty to keep the current version.
+                </p>
+                {gameFile && (
+                  <p className="text-cyan-400 text-sm mt-2">
+                    Selected: {gameFile.name} ({(gameFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
               </div>
 
               <div className="flex gap-4">
