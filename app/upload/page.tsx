@@ -4,11 +4,13 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { upload } from "@vercel/blob/client";
 
 export default function Upload() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -39,6 +41,7 @@ export default function Upload() {
     e.preventDefault();
     setError("");
     setUploading(true);
+    setUploadProgress(0);
 
     if (!file) {
       setError("Please select a file to upload");
@@ -47,28 +50,47 @@ export default function Upload() {
     }
 
     try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      data.append("slug", formData.slug);
+      // Upload file directly to Vercel Blob (client-side)
+      setUploadProgress(10);
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+        onUploadProgress: ({ loaded, total }) => {
+          const progress = Math.round((loaded / total) * 80) + 10; // 10-90%
+          setUploadProgress(progress);
+        },
+      });
 
-      const res = await fetch("/api/upload", {
+      setUploadProgress(90);
+
+      // Save game metadata to database
+      const res = await fetch("/api/save-game", {
         method: "POST",
-        body: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          slug: formData.slug,
+          blobUrl: blob.url,
+        }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error || "Upload failed");
+        throw new Error(result.error || "Failed to save game");
       }
 
+      setUploadProgress(100);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      console.error("Upload error:", err);
+      setError(err.message || "Upload failed");
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -181,14 +203,30 @@ export default function Upload() {
                 <p className="text-gray-400 text-sm mt-1">
                   Upload a ZIP file containing your game. Must include an index.html file.
                 </p>
+                {file && (
+                  <p className="text-gray-300 text-sm mt-2">
+                    Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
               </div>
+
+              {uploading && uploadProgress > 0 && (
+                <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"
                 disabled={uploading}
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {uploading ? "Uploading..." : "Upload Game"}
+                {uploading
+                  ? `Uploading... ${uploadProgress}%`
+                  : "Upload Game"}
               </button>
             </form>
           </div>
