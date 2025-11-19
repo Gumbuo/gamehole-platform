@@ -27,6 +27,34 @@ export default function Dashboard() {
     }
   };
 
+  const handleDelete = async (slug: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/delete-game", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ slug }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete game");
+      }
+
+      // Refresh the games list
+      fetchUserGames();
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+      console.error("Delete error:", error);
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
@@ -119,12 +147,12 @@ export default function Dashboard() {
                     >
                       View
                     </Link>
-                    <Link
-                      href={`/dashboard/edit/${game.slug}`}
-                      className="flex-1 text-center bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500"
+                    <button
+                      onClick={() => handleDelete(game.slug, game.title)}
+                      className="flex-1 text-center bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                     >
-                      Edit
-                    </Link>
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
