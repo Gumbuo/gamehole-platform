@@ -57,9 +57,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload file to Vercel Blob
-    const blob = await put(`games/${slug}/${file.name}`, file, {
-      access: "public",
-    });
+    let blob;
+    try {
+      blob = await put(`games/${slug}/${file.name}`, file, {
+        access: "public",
+      });
+    } catch (blobError: any) {
+      console.error("Blob upload error:", blobError);
+      return NextResponse.json(
+        {
+          error: "Failed to upload file to blob storage",
+          details: blobError.message || String(blobError)
+        },
+        { status: 500 }
+      );
+    }
 
     // Save game to database
     const result = await sql`
@@ -72,10 +84,13 @@ export async function POST(request: NextRequest) {
       success: true,
       game: result[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Failed to upload game" },
+      {
+        error: "Failed to upload game",
+        details: error.message || String(error)
+      },
       { status: 500 }
     );
   }
