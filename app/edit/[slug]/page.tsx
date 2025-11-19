@@ -5,13 +5,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function EditGame({ params }: { params: { slug: string } }) {
+export default function EditGame({ params }: { params: Promise<{ slug: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [slug, setSlug] = useState<string>("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -21,14 +22,18 @@ export default function EditGame({ params }: { params: { slug: string } }) {
   });
 
   useEffect(() => {
-    if (session) {
+    params.then((p) => setSlug(p.slug));
+  }, [params]);
+
+  useEffect(() => {
+    if (session && slug) {
       fetchGame();
     }
-  }, [session, params.slug]);
+  }, [session, slug]);
 
   const fetchGame = async () => {
     try {
-      const res = await fetch(`/api/games/${params.slug}`);
+      const res = await fetch(`/api/games/${slug}`);
       const data = await res.json();
 
       if (res.ok && data.game) {
@@ -62,7 +67,7 @@ export default function EditGame({ params }: { params: { slug: string } }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          slug: params.slug,
+          slug: slug,
           title: formData.title,
           description: formData.description,
           category: formData.category,
