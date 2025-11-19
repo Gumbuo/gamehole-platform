@@ -12,17 +12,17 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const game = await getGame(params.slug);
 
-  if (\!game) {
+  if (!game) {
     return {
       title: "Game Not Found",
     };
   }
 
-  const url = \;
-  const description = game.description || \;
+  const url = `https://www.gamehole.ink/play/${params.slug}`;
+  const description = game.description || `Play ${game.title} on GameHole.ink`;
 
   return {
-    title: \,
+    title: `${game.title} - GameHole.ink`,
     description: description,
     openGraph: {
       title: game.title,
@@ -35,12 +35,10 @@ export async function generateMetadata(props: {
       card: "summary_large_image",
       title: game.title,
       description: description,
-      creator: \,
+      creator: "@gamehole",
     },
   };
 }
-
-
 
 async function getGame(slug: string) {
   const res = await fetch(
@@ -90,11 +88,11 @@ export default async function PlayGame(props: {
                 <span>👁️ {game.views} views</span>
                 <span>🎮 {game.plays} plays</span>
               </div>
-              
+
               {/* Rating */}
               <div className="mt-4">
-                <RatingStars 
-                  slug={params.slug} 
+                <RatingStars
+                  slug={params.slug}
                   initialRating={game.rating_count > 0 ? game.rating_sum / game.rating_count : 0}
                   initialCount={game.rating_count}
                 />
