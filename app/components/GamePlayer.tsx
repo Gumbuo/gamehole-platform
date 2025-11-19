@@ -63,6 +63,23 @@ export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
+      // Replace file references in HTML with blob URLs
+      for (const [filename, blobUrl] of Object.entries(fileMap)) {
+        if (filename === 'index.html') continue; // Skip the HTML file itself
+
+        // Replace in src and href attributes
+        const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        htmlContent = htmlContent.replace(
+          new RegExp(`(src|href)=["']${escapedFilename}["']`, 'gi'),
+          `$1="${blobUrl}"`
+        );
+        // Also handle unquoted or relative paths
+        htmlContent = htmlContent.replace(
+          new RegExp(`(src|href)=["'][^"']*\\/${escapedFilename}["']`, 'gi'),
+          `$1="${blobUrl}"`
+        );
+      }
+
       // Inject fetch interceptor script at the beginning
       const interceptorScript = `
         <script>
