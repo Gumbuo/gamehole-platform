@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { sql } from "@vercel/postgres";
+import { sql } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
   providers: [

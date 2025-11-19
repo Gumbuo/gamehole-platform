@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserGames } from "@/lib/db";
-import { sql } from "@vercel/postgres";
+import { sql } from "@/lib/db";
 
 export async function GET() {
   try {
