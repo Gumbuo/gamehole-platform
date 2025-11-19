@@ -57,7 +57,7 @@ export default async function PlayGame(props: {
         {/* Game Player */}
         <div className="bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-purple-500">
           <div className="aspect-video bg-black rounded overflow-hidden">
-            <GamePlayer zipUrl={game.blob_url} title={game.title} />
+            <GamePlayer zipUrl={game.blob_url} title={game.title} slug={params.slug} />
           </div>
         </div>
 

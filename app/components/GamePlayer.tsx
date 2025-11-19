@@ -6,12 +6,14 @@ import JSZip from "jszip";
 interface GamePlayerProps {
   zipUrl: string;
   title: string;
+  slug: string;
 }
 
-export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
+export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [playTracked, setPlayTracked] = useState(false);
 
   useEffect(() => {
     loadAndExtractGame();
@@ -115,6 +117,16 @@ export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
       }
 
       setLoading(false);
+
+      // Increment play count once after successful load
+      if (!playTracked) {
+        setPlayTracked(true);
+        fetch("/api/increment-play", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug }),
+        }).catch((err) => console.error("Failed to track play:", err));
+      }
     } catch (err: any) {
       console.error("Game load error:", err);
       setError(err.message || "Failed to load game");
