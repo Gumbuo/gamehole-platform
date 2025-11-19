@@ -17,6 +17,7 @@ export default function Upload() {
     title: "",
     description: "",
     slug: "",
+    category: "Other",
   });
 
   const [file, setFile] = useState<File | null>(null);
@@ -73,6 +74,7 @@ export default function Upload() {
           title: formData.title,
           description: formData.description,
           slug: formData.slug,
+          category: formData.category,
           blobUrl: blob.url,
         }),
       });
@@ -187,6 +189,34 @@ export default function Upload() {
                   className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
                   placeholder="Describe your game..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Category *
+                </label>
+                <select
+                  required
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value="Action">Action</option>
+                  <option value="Adventure">Adventure</option>
+                  <option value="Puzzle">Puzzle</option>
+                  <option value="RPG">RPG</option>
+                  <option value="Strategy">Strategy</option>
+                  <option value="Platformer">Platformer</option>
+                  <option value="Shooter">Shooter</option>
+                  <option value="Racing">Racing</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Simulation">Simulation</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Casual">Casual</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
               <div>

@@ -27,12 +27,39 @@ export async function initializeDatabase() {
         slug VARCHAR(255) UNIQUE NOT NULL,
         blob_url TEXT NOT NULL,
         thumbnail_url TEXT,
+        category VARCHAR(50) DEFAULT 'Other',
+        tags TEXT[] DEFAULT '{}',
         views INTEGER DEFAULT 0,
         plays INTEGER DEFAULT 0,
+        rating_sum INTEGER DEFAULT 0,
+        rating_count INTEGER DEFAULT 0,
+        is_featured BOOLEAN DEFAULT false,
         is_published BOOLEAN DEFAULT true,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `;
+
+    // Add columns if they don't exist (migration for existing databases)
+    await sql`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='category') THEN
+          ALTER TABLE games ADD COLUMN category VARCHAR(50) DEFAULT 'Other';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='tags') THEN
+          ALTER TABLE games ADD COLUMN tags TEXT[] DEFAULT '{}';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='rating_sum') THEN
+          ALTER TABLE games ADD COLUMN rating_sum INTEGER DEFAULT 0;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='rating_count') THEN
+          ALTER TABLE games ADD COLUMN rating_count INTEGER DEFAULT 0;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='is_featured') THEN
+          ALTER TABLE games ADD COLUMN is_featured BOOLEAN DEFAULT false;
+        END IF;
+      END $$;
     `;
 
     // Create index on slug for faster lookups
@@ -105,4 +132,74 @@ export async function incrementGamePlays(slug: string) {
     SET plays = plays + 1
     WHERE slug = ${slug}
   `;
+}
+
+export async function getGamesByCategory(category: string, limit = 50) {
+  const result = await sql`
+    SELECT g.*, u.name as author_name, u.avatar as author_avatar,
+           CASE WHEN g.rating_count > 0 THEN ROUND(g.rating_sum::decimal / g.rating_count, 1) ELSE 0 END as average_rating
+    FROM games g
+    JOIN users u ON g.user_id = u.id
+    WHERE g.is_published = true AND g.category = ${category}
+    ORDER BY g.created_at DESC
+    LIMIT ${limit}
+  `;
+  return result;
+}
+
+export async function searchGames(query: string, limit = 50) {
+  const result = await sql`
+    SELECT g.*, u.name as author_name, u.avatar as author_avatar,
+           CASE WHEN g.rating_count > 0 THEN ROUND(g.rating_sum::decimal / g.rating_count, 1) ELSE 0 END as average_rating
+    FROM games g
+    JOIN users u ON g.user_id = u.id
+    WHERE g.is_published = true 
+    AND (g.title ILIKE ${'%' + query + '%'} OR g.description ILIKE ${'%' + query + '%'})
+    ORDER BY g.created_at DESC
+    LIMIT ${limit}
+  `;
+  return result;
+}
+
+export async function getFeaturedGames(limit = 6) {
+  const result = await sql`
+    SELECT g.*, u.name as author_name, u.avatar as author_avatar,
+           CASE WHEN g.rating_count > 0 THEN ROUND(g.rating_sum::decimal / g.rating_count, 1) ELSE 0 END as average_rating
+    FROM games g
+    JOIN users u ON g.user_id = u.id
+    WHERE g.is_published = true AND g.is_featured = true
+    ORDER BY g.created_at DESC
+    LIMIT ${limit}
+  `;
+  return result;
+}
+
+export async function rateGame(slug: string, rating: number) {
+  // Rating should be 1-5
+  if (rating < 1 || rating > 5) throw new Error('Rating must be between 1 and 5');
+  
+  await sql`
+    UPDATE games
+    SET rating_sum = rating_sum + ${rating},
+        rating_count = rating_count + 1
+    WHERE slug = ${slug}
+  `;
+}
+
+export async function getCategories() {
+  return [
+    'Action',
+    'Adventure',
+    'Puzzle',
+    'RPG',
+    'Strategy',
+    'Platformer',
+    'Shooter',
+    'Racing',
+    'Sports',
+    'Simulation',
+    'Horror',
+    'Casual',
+    'Other'
+  ];
 }

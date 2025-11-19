@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import GamePlayer from "@/app/components/GamePlayer";
+import RatingStars from "@/app/components/RatingStars";
 
 async function getGame(slug: string) {
   const res = await fetch(
@@ -45,10 +46,19 @@ export default async function PlayGame(props: {
               {game.description && (
                 <p className="text-gray-300 mb-4">{game.description}</p>
               )}
-              <div className="flex items-center gap-4 text-sm text-gray-400">
+              <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
                 <span>By {game.author_name}</span>
                 <span>👁️ {game.views} views</span>
                 <span>🎮 {game.plays} plays</span>
+              </div>
+              
+              {/* Rating */}
+              <div className="mt-4">
+                <RatingStars 
+                  slug={params.slug} 
+                  initialRating={game.rating_count > 0 ? game.rating_sum / game.rating_count : 0}
+                  initialCount={game.rating_count}
+                />
               </div>
             </div>
           </div>

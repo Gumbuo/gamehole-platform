@@ -1,19 +1,78 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-async function getAllGames() {
-  const res = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/games`,
-    { cache: "no-store" }
-  );
+export default function GamesPage() {
+  const [games, setGames] = useState<any[]>([]);
+  const [filteredGames, setFilteredGames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  if (!res.ok) return [];
+  const categories = [
+    "All",
+    "Action",
+    "Adventure",
+    "Puzzle",
+    "RPG",
+    "Strategy",
+    "Platformer",
+    "Shooter",
+    "Racing",
+    "Sports",
+    "Simulation",
+    "Horror",
+    "Casual",
+    "Other",
+  ];
 
-  const data = await res.json();
-  return data.games || [];
-}
+  useEffect(() => {
+    fetchGames();
+  }, []);
 
-export default async function GamesPage() {
-  const games = await getAllGames();
+  useEffect(() => {
+    filterGames();
+  }, [games, searchQuery, selectedCategory]);
+
+  const fetchGames = async () => {
+    try {
+      const res = await fetch("/api/games");
+      const data = await res.json();
+      setGames(data.games || []);
+    } catch (error) {
+      console.error("Failed to fetch games:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterGames = () => {
+    let filtered = games;
+
+    // Filter by category
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((game) => game.category === selectedCategory);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (game) =>
+          game.title.toLowerCase().includes(query) ||
+          game.description?.toLowerCase().includes(query) ||
+          game.author_name?.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredGames(filtered);
+  };
+
+  const getAverageRating = (game: any) => {
+    if (game.rating_count === 0) return 0;
+    return (game.rating_sum / game.rating_count).toFixed(1);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
@@ -28,36 +87,103 @@ export default async function GamesPage() {
           </p>
         </header>
 
+        {/* Search and Filter */}
+        <div className="max-w-4xl mx-auto mb-8 space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search games..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-6 py-4 rounded-lg bg-gray-800 border border-purple-500 text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+            />
+            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+          </div>
+
+          {/* Category Filter */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  selectedCategory === category
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* Results Count */}
+          <p className="text-center text-gray-400">
+            {loading ? (
+              "Loading games..."
+            ) : (
+              `Showing ${filteredGames.length} of ${games.length} games`
+            )}
+          </p>
+        </div>
+
         {/* Games Grid */}
-        {games.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          </div>
+        ) : filteredGames.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-300 mb-6">
-              No games available yet. Be the first to upload!
+              {games.length === 0
+                ? "No games available yet. Be the first to upload!"
+                : "No games match your search."}
             </p>
-            <Link
-              href="/dashboard"
-              className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-600 hover:to-pink-600"
-            >
-              Upload Your Game
-            </Link>
+            {games.length === 0 && (
+              <Link
+                href="/dashboard"
+                className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-600 hover:to-pink-600"
+              >
+                Upload Your Game
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {games.map((game: any) => (
+            {filteredGames.map((game: any) => (
               <Link
                 key={game.id}
                 href={`/play/${game.slug}`}
                 className="group bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500 hover:border-purple-400 transition-all hover:transform hover:scale-105"
               >
-                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400">
-                  {game.title}
-                </h3>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 flex-1">
+                    {game.title}
+                  </h3>
+                  {game.is_featured && (
+                    <span className="text-xl" title="Featured">
+                      ⭐
+                    </span>
+                  )}
+                </div>
+
+                {/* Category Badge */}
+                <div className="mb-2">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-500 bg-opacity-30 text-purple-300 border border-purple-500">
+                    {game.category || "Other"}
+                  </span>
+                </div>
+
                 {game.description && (
                   <p className="text-gray-300 mb-4 line-clamp-2">
                     {game.description}
                   </p>
                 )}
-                <div className="flex items-center gap-3 text-sm text-gray-400">
+
+                <div className="flex items-center gap-3 text-sm text-gray-400 mb-3">
                   {game.author_avatar && (
                     <img
                       src={game.author_avatar}
@@ -67,9 +193,15 @@ export default async function GamesPage() {
                   )}
                   <span>{game.author_name}</span>
                 </div>
-                <div className="mt-4 flex justify-between text-sm text-gray-400">
+
+                <div className="flex justify-between text-sm text-gray-400">
                   <span>👁️ {game.views} views</span>
                   <span>🎮 {game.plays} plays</span>
+                  {game.rating_count > 0 && (
+                    <span>
+                      ⭐ {getAverageRating(game)} ({game.rating_count})
+                    </span>
+                  )}
                 </div>
               </Link>
             ))}

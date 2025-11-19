@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, slug, blobUrl } = body;
+    const { title, description, slug, category, blobUrl } = body;
 
     if (!title || !slug || !blobUrl) {
       return NextResponse.json(
