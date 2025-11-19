@@ -145,6 +145,22 @@ export default function Upload() {
           <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-purple-500">
             <h1 className="text-3xl font-bold text-white mb-6">Upload Game</h1>
 
+            {/* Security Notice */}
+            <div className="bg-green-500 bg-opacity-10 border border-green-500 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 text-2xl">🔒</span>
+                <div>
+                  <h3 className="text-green-400 font-semibold mb-2">Your Game, Your Control</h3>
+                  <ul className="text-gray-300 text-sm space-y-1">
+                    <li>• Only you can edit or delete your uploaded games</li>
+                    <li>• Your files are securely stored on enterprise cloud infrastructure</li>
+                    <li>• We never sell, share, or modify your game files</li>
+                    <li>• You can remove your games anytime from your dashboard</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             {error && (
               <div className="bg-red-500 bg-opacity-20 border border-red-500 text-red-200 p-4 rounded-lg mb-6">
                 {error}
