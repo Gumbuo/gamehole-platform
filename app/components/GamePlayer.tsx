@@ -178,6 +178,46 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
 
             return originalXHROpen.call(this, method, url, ...rest);
           };
+
+          // Intercept Image element src (for PIXI texture loading)
+          const originalImageSrcDescriptor = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
+          const originalImageSrcSet = originalImageSrcDescriptor.set;
+
+          Object.defineProperty(Image.prototype, 'src', {
+            get: originalImageSrcDescriptor.get,
+            set: function(url) {
+              const urlStr = typeof url === 'string' ? url : String(url);
+              const blobUrl = findBlobUrl(urlStr);
+
+              if (blobUrl) {
+                console.log('[GamePlayer DEBUG] Image.src intercepted, redirecting to blob');
+                return originalImageSrcSet.call(this, blobUrl);
+              }
+
+              return originalImageSrcSet.call(this, url);
+            }
+          });
+
+          // Also intercept HTMLImageElement.prototype.src for good measure
+          const originalHTMLImageSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+          if (originalHTMLImageSrcDescriptor && originalHTMLImageSrcDescriptor.set) {
+            const originalHTMLImageSrcSet = originalHTMLImageSrcDescriptor.set;
+
+            Object.defineProperty(HTMLImageElement.prototype, 'src', {
+              get: originalHTMLImageSrcDescriptor.get,
+              set: function(url) {
+                const urlStr = typeof url === 'string' ? url : String(url);
+                const blobUrl = findBlobUrl(urlStr);
+
+                if (blobUrl) {
+                  console.log('[GamePlayer DEBUG] HTMLImageElement.src intercepted, redirecting to blob');
+                  return originalHTMLImageSrcSet.call(this, blobUrl);
+                }
+
+                return originalHTMLImageSrcSet.call(this, url);
+              }
+            });
+          }
         </script>
       `;
 
