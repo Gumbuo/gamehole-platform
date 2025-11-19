@@ -54,10 +54,16 @@ export default function Upload() {
     try {
       // Upload file directly to Vercel Blob (client-side)
       setUploadProgress(10);
-      const blob = await upload(file.name, file, {
+
+      // Add timestamp to filename to avoid conflicts
+      const timestamp = Date.now();
+      const fileExt = file.name.substring(file.name.lastIndexOf('.'));
+      const fileName = file.name.substring(0, file.name.lastIndexOf('.'));
+      const uniqueFileName = `${fileName}-${timestamp}${fileExt}`;
+
+      const blob = await upload(uniqueFileName, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
-        addRandomSuffix: true,
         onUploadProgress: ({ loaded, total }) => {
           const progress = Math.round((loaded / total) * 80) + 10; // 10-90%
           setUploadProgress(progress);
