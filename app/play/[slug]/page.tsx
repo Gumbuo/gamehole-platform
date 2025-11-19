@@ -13,11 +13,10 @@ async function getGame(slug: string) {
   return data.game;
 }
 
-export default async function PlayGame({
-  params,
-}: {
-  params: { slug: string };
+export default async function PlayGame(props: {
+  params: Promise<{ slug: string }>;
 }) {
+  const params = await props.params;
   const game = await getGame(params.slug);
 
   if (!game) {

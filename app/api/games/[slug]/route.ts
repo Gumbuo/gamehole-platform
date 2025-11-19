@@ -3,9 +3,10 @@ import { getGame, incrementGameViews } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  props: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const params = await props.params;
     const game = await getGame(params.slug);
 
     if (!game) {
