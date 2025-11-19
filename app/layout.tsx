@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     siteName: "GameHole.ink",
     images: [
       {
-        url: "https://gamehole.ink/og-image-v2.png",
+        url: "https://gamehole.ink/og-image-v2.gif",
         width: 1200,
         height: 630,
         alt: "GameHole.ink - Upload Your Games",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GameHole.ink - Upload Your Games",
     description: "Free game hosting for developers. No limits, no strings attached.",
-    images: ["https://gamehole.ink/og-image-v2.png"],
+    images: ["https://gamehole.ink/og-image-v2.gif"],
   },
 };
 
