@@ -98,9 +98,24 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
             const filename = path.split('/').pop().split('?')[0];
             if (fileMap[filename]) return fileMap[filename];
 
+            // Fix double extension issue (file.png.png -> file.png)
+            if (filename.includes('.png.png')) {
+              const fixedFilename = filename.replace('.png.png', '.png');
+              if (fileMap[fixedFilename]) return fileMap[fixedFilename];
+            }
+            if (filename.includes('.jpg.jpg')) {
+              const fixedFilename = filename.replace('.jpg.jpg', '.jpg');
+              if (fileMap[fixedFilename]) return fileMap[fixedFilename];
+            }
+
             // Try all keys that end with the filename
             for (const key in fileMap) {
               if (key.endsWith(filename) || key.endsWith('/' + filename)) {
+                return fileMap[key];
+              }
+              // Also try with fixed extension
+              const withoutDoubleExt = filename.replace(/\.(png|jpg|jpeg|gif|mp3|wav|ogg)\.\\1$/, '.$1');
+              if (key.endsWith(withoutDoubleExt) || key.endsWith('/' + withoutDoubleExt)) {
                 return fileMap[key];
               }
             }
