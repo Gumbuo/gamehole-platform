@@ -86,20 +86,50 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       const interceptorScript = `
         <script>
           const originalFetch = window.fetch;
+          const originalXHROpen = XMLHttpRequest.prototype.open;
           const fileMap = ${JSON.stringify(fileMap)};
 
-          window.fetch = function(url, options) {
-            // Extract filename from URL
-            const urlStr = typeof url === 'string' ? url : url.toString();
-            const filename = urlStr.split('/').pop().split('?')[0];
+          // Helper function to find matching blob URL
+          function findBlobUrl(path) {
+            // Try exact match first
+            if (fileMap[path]) return fileMap[path];
 
-            // If we have this file in our map, use the blob URL
-            if (fileMap[filename]) {
-              return originalFetch(fileMap[filename], options);
+            // Try just the filename
+            const filename = path.split('/').pop().split('?')[0];
+            if (fileMap[filename]) return fileMap[filename];
+
+            // Try all keys that end with the filename
+            for (const key in fileMap) {
+              if (key.endsWith(filename) || key.endsWith('/' + filename)) {
+                return fileMap[key];
+              }
             }
 
-            // Otherwise, use original fetch
+            return null;
+          }
+
+          // Intercept fetch
+          window.fetch = function(url, options) {
+            const urlStr = typeof url === 'string' ? url : url.toString();
+            const blobUrl = findBlobUrl(urlStr);
+
+            if (blobUrl) {
+              return originalFetch(blobUrl, options);
+            }
+
             return originalFetch(url, options);
+          };
+
+          // Intercept XMLHttpRequest (for audio/image loading)
+          XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+            const urlStr = typeof url === 'string' ? url : url.toString();
+            const blobUrl = findBlobUrl(urlStr);
+
+            if (blobUrl) {
+              return originalXHROpen.call(this, method, blobUrl, ...rest);
+            }
+
+            return originalXHROpen.call(this, method, url, ...rest);
           };
         </script>
       `;
