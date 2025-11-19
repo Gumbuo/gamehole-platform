@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { slug, title, description, category, credits } = body;
+    const { slug, title, description, category, credits, blob_url } = body;
 
     if (!slug) {
       return NextResponse.json(
@@ -59,6 +59,7 @@ export async function PATCH(request: NextRequest) {
         description = ${description},
         category = ${category || 'Other'},
         credits = ${credits || null},
+        blob_url = COALESCE(${blob_url || null}, blob_url),
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${game.id}
       RETURNING *
