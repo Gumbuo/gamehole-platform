@@ -65,12 +65,11 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
-      // Replace file references in HTML with blob URLs (except JS files)
+      // Replace file references in HTML with blob URLs (including JS files)
       for (const [filename, blobUrl] of Object.entries(fileMap)) {
         if (filename === 'index.html') continue; // Skip the HTML file itself
-        if (filename.endsWith('.js')) continue; // Skip JS files, we'll inline them
 
-        // Replace in src and href attributes for non-JS files
+        // Replace in src and href attributes
         const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         htmlContent = htmlContent.replace(
           new RegExp(`(src|href)=["']${escapedFilename}["']`, 'gi'),
@@ -81,34 +80,6 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
           new RegExp(`(src|href)=["'][^"']*\\/${escapedFilename}["']`, 'gi'),
           `$1="${blobUrl}"`
         );
-      }
-
-      // Inline JavaScript files in the order they appear in HTML
-      const scriptRegex = /<script([^>]*?)src=["']([^"']+\.js)["']([^>]*?)>\s*<\/script>/gi;
-      let match;
-      const replacements: Array<{original: string, replacement: string}> = [];
-
-      while ((match = scriptRegex.exec(htmlContent)) !== null) {
-        const fullMatch = match[0];
-        const beforeSrc = match[1];
-        const scriptSrc = match[2];
-        const afterSrc = match[3];
-
-        // Extract filename from path (handle both absolute and relative paths)
-        const filename = scriptSrc.split('/').pop() || scriptSrc;
-
-        // Find the script file in the ZIP
-        const file = zip.files[filename] || zip.files[scriptSrc];
-        if (file && !file.dir) {
-          const jsContent = await file.async("string");
-          const replacement = `<script${beforeSrc}${afterSrc}>${jsContent}</script>`;
-          replacements.push({ original: fullMatch, replacement });
-        }
-      }
-
-      // Apply all replacements in order
-      for (const { original, replacement } of replacements) {
-        htmlContent = htmlContent.replace(original, replacement);
       }
 
       // Inject fetch interceptor script at the beginning
