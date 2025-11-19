@@ -65,17 +65,6 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
-      // Create a map of JavaScript file contents for inlining
-      const jsContentMap: Record<string, string> = {};
-      for (const filename of Object.keys(fileMap)) {
-        if (filename.endsWith('.js')) {
-          const file = zip.files[filename];
-          if (file) {
-            jsContentMap[filename] = await file.async("string");
-          }
-        }
-      }
-
       // Replace file references in HTML with blob URLs (except JS files)
       for (const [filename, blobUrl] of Object.entries(fileMap)) {
         if (filename === 'index.html') continue; // Skip the HTML file itself
@@ -94,19 +83,32 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
         );
       }
 
-      // Inline JavaScript files to ensure sequential execution
-      for (const [filename, jsContent] of Object.entries(jsContentMap)) {
-        const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Replace <script src="file.js"></script> with inline script
-        htmlContent = htmlContent.replace(
-          new RegExp(`<script([^>]*?)src=["']${escapedFilename}["']([^>]*?)>\\s*</script>`, 'gi'),
-          `<script$1$2>${jsContent}</script>`
-        );
-        // Also handle paths with directories
-        htmlContent = htmlContent.replace(
-          new RegExp(`<script([^>]*?)src=["'][^"']*\\/${escapedFilename}["']([^>]*?)>\\s*</script>`, 'gi'),
-          `<script$1$2>${jsContent}</script>`
-        );
+      // Inline JavaScript files in the order they appear in HTML
+      const scriptRegex = /<script([^>]*?)src=["']([^"']+\.js)["']([^>]*?)>\s*<\/script>/gi;
+      let match;
+      const replacements: Array<{original: string, replacement: string}> = [];
+
+      while ((match = scriptRegex.exec(htmlContent)) !== null) {
+        const fullMatch = match[0];
+        const beforeSrc = match[1];
+        const scriptSrc = match[2];
+        const afterSrc = match[3];
+
+        // Extract filename from path (handle both absolute and relative paths)
+        const filename = scriptSrc.split('/').pop() || scriptSrc;
+
+        // Find the script file in the ZIP
+        const file = zip.files[filename] || zip.files[scriptSrc];
+        if (file && !file.dir) {
+          const jsContent = await file.async("string");
+          const replacement = `<script${beforeSrc}${afterSrc}>${jsContent}</script>`;
+          replacements.push({ original: fullMatch, replacement });
+        }
+      }
+
+      // Apply all replacements in order
+      for (const { original, replacement } of replacements) {
+        htmlContent = htmlContent.replace(original, replacement);
       }
 
       // Inject fetch interceptor script at the beginning
