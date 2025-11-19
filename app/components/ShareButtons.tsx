@@ -47,7 +47,7 @@ export default function ShareButtons({ title, slug }: ShareButtonsProps) {
   };
 
   return (
-    <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+    <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
       <h3 className="text-xl font-bold text-white mb-4">Share This Game</h3>
 
       <div className="flex flex-wrap gap-3 mb-4">
@@ -69,7 +69,7 @@ export default function ShareButtons({ title, slug }: ShareButtonsProps) {
 
         <button
           onClick={copyLink}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <span>🔗</span>
           <span>{copied ? "Copied!" : "Copy Link"}</span>

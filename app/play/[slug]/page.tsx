@@ -63,20 +63,20 @@ export default async function PlayGame(props: {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
           <Link
             href="/games"
-            className="text-purple-400 hover:text-purple-300"
+            className="text-cyan-400 hover:text-cyan-300"
           >
             ← Back to Games
           </Link>
         </div>
 
         {/* Game Info */}
-        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500 mb-6">
+        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500 mb-6">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">{game.title}</h1>
@@ -102,14 +102,14 @@ export default async function PlayGame(props: {
         </div>
 
         {/* Game Player */}
-        <div className="bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-purple-500">
+        <div className="bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-cyan-500">
           <div className="aspect-video bg-black rounded overflow-hidden">
             <GamePlayer zipUrl={game.blob_url} title={game.title} slug={params.slug} />
           </div>
         </div>
 
         {/* Instructions */}
-        <div className="mt-6 bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+        <div className="mt-6 bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
           <h2 className="text-2xl font-bold text-white mb-4">How to Play</h2>
           <p className="text-gray-300">
             Click on the game above to start playing. Use your keyboard and mouse to control the game.
@@ -118,7 +118,7 @@ export default async function PlayGame(props: {
 
         {/* Credits */}
         {game.credits && (
-          <div className="mt-6 bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="mt-6 bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <h2 className="text-2xl font-bold text-white mb-4">Credits</h2>
             <div className="text-gray-300 whitespace-pre-line">
               {game.credits}

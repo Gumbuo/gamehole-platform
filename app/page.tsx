@@ -2,11 +2,11 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <main className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <header className="text-center mb-16">
-          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-green-500 text-transparent bg-clip-text">
             GameHole
           </h1>
           <p className="text-2xl text-gray-300">
@@ -26,7 +26,7 @@ export default function Home() {
           <div className="flex gap-4 justify-center">
             <Link
               href="/games"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+              className="bg-gradient-to-r from-cyan-500 to-green-500 text-white px-8 py-4 rounded-lg text-xl font-semibold hover:from-cyan-600 hover:to-green-600 transition-all transform hover:scale-105"
             >
               Browse Games
             </Link>
@@ -41,7 +41,7 @@ export default function Home() {
 
         {/* Features Grid */}
         <section className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">🚀</div>
             <h3 className="text-xl font-bold mb-2 text-white">Instant Deploy</h3>
             <p className="text-gray-300">
@@ -49,7 +49,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">💰</div>
             <h3 className="text-xl font-bold mb-2 text-white">100% Free</h3>
             <p className="text-gray-300">
@@ -57,7 +57,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">🎮</div>
             <h3 className="text-xl font-bold mb-2 text-white">All Game Types</h3>
             <p className="text-gray-300">
@@ -65,7 +65,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">⚡</div>
             <h3 className="text-xl font-bold mb-2 text-white">Fast CDN</h3>
             <p className="text-gray-300">
@@ -73,7 +73,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">🔗</div>
             <h3 className="text-xl font-bold mb-2 text-white">Custom URLs</h3>
             <p className="text-gray-300">
@@ -81,7 +81,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
             <div className="text-4xl mb-4">🛠️</div>
             <h3 className="text-xl font-bold mb-2 text-white">Dev-Friendly</h3>
             <p className="text-gray-300">
@@ -101,7 +101,7 @@ export default function Home() {
           <div className="flex gap-4 justify-center">
             <Link
               href="/dashboard"
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              className="bg-cyan-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-cyan-700 transition-colors"
             >
               Get Started - It's Free!
             </Link>

@@ -95,7 +95,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <p className="text-white text-xl">Loading...</p>
       </div>
     );
@@ -103,12 +103,12 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-white text-xl mb-4">Please sign in to edit games</p>
           <Link
             href="/dashboard"
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+            className="bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700"
           >
             Go to Dashboard
           </Link>
@@ -118,19 +118,19 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
             <Link
               href="/dashboard"
-              className="text-purple-400 hover:text-purple-300"
+              className="text-cyan-400 hover:text-cyan-300"
             >
               ← Back to Dashboard
             </Link>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-cyan-500">
             <h1 className="text-3xl font-bold text-white mb-6">Edit Game</h1>
 
             {error && (
@@ -157,7 +157,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="My Awesome Game"
                 />
               </div>
@@ -172,7 +172,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="Describe your game..."
                 />
               </div>
@@ -187,7 +187,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                     setFormData({ ...formData, credits: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="Art by Jane Doe&#10;Music by John Smith&#10;Code by..."
                 />
                 <p className="text-gray-400 text-sm mt-1">
@@ -205,7 +205,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="Action">Action</option>
                   <option value="Adventure">Adventure</option>
@@ -227,7 +227,7 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-gradient-to-r from-cyan-500 to-green-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-cyan-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : "Save Changes"}
                 </button>

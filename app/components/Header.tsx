@@ -7,13 +7,13 @@ export default function Header() {
   const { data: session } = useSession();
 
   return (
-    <header className="bg-gray-900 bg-opacity-95 border-b border-purple-500 sticky top-0 z-50">
+    <header className="bg-gray-900 bg-opacity-95 border-b border-cyan-500 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo/Home Link */}
           <Link
             href="/"
-            className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-300 hover:to-pink-400 transition-all"
+            className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-green-500 hover:from-cyan-300 hover:to-green-400 transition-all"
           >
             GameHole.ink
           </Link>
@@ -37,7 +37,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/upload"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                  className="bg-gradient-to-r from-cyan-500 to-green-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-green-600 transition-all"
                 >
                   Upload Game
                 </Link>
@@ -51,7 +51,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/dashboard"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                className="bg-gradient-to-r from-cyan-500 to-green-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-green-600 transition-all"
               >
                 Sign In
               </Link>

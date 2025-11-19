@@ -75,11 +75,11 @@ export default function GamesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-green-500 text-transparent bg-clip-text">
             Browse Games
           </h1>
           <p className="text-xl text-gray-300">
@@ -96,7 +96,7 @@ export default function GamesPage() {
               placeholder="Search games..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 rounded-lg bg-gray-800 border border-purple-500 text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+              className="w-full px-6 py-4 rounded-lg bg-gray-800 border border-cyan-500 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
             />
             <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
               🔍
@@ -111,7 +111,7 @@ export default function GamesPage() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   selectedCategory === category
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                    ? "bg-gradient-to-r from-cyan-500 to-green-500 text-white"
                     : "bg-gray-800 text-gray-300 hover:bg-gray-700"
                 }`}
               >
@@ -133,7 +133,7 @@ export default function GamesPage() {
         {/* Games Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto"></div>
           </div>
         ) : filteredGames.length === 0 ? (
           <div className="text-center py-12">
@@ -145,7 +145,7 @@ export default function GamesPage() {
             {games.length === 0 && (
               <Link
                 href="/dashboard"
-                className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-600 hover:to-pink-600"
+                className="inline-block bg-gradient-to-r from-cyan-500 to-green-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-cyan-600 hover:to-green-600"
               >
                 Upload Your Game
               </Link>
@@ -157,10 +157,10 @@ export default function GamesPage() {
               <Link
                 key={game.id}
                 href={`/play/${game.slug}`}
-                className="group bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500 hover:border-purple-400 transition-all hover:transform hover:scale-105"
+                className="group bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500 hover:border-cyan-400 transition-all hover:transform hover:scale-105"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 flex-1">
+                  <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 flex-1">
                     {game.title}
                   </h3>
                   {game.is_featured && (
@@ -172,7 +172,7 @@ export default function GamesPage() {
 
                 {/* Category Badge */}
                 <div className="mb-2">
-                  <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-500 bg-opacity-30 text-purple-300 border border-purple-500">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-cyan-500 bg-opacity-30 text-cyan-300 border border-cyan-500">
                     {game.category || "Other"}
                   </span>
                 </div>

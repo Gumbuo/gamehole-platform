@@ -83,7 +83,7 @@ export default function Comments({ slug }: CommentsProps) {
   };
 
   return (
-    <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+    <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
       <h2 className="text-2xl font-bold text-white mb-6">
         Comments ({comments.length})
       </h2>
@@ -96,12 +96,12 @@ export default function Comments({ slug }: CommentsProps) {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Share your thoughts..."
             rows={3}
-            className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"
+            className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 resize-none"
           />
           <button
             type="submit"
             disabled={!newComment.trim() || posting}
-            className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-2 bg-gradient-to-r from-cyan-500 to-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {posting ? "Posting..." : "Post Comment"}
           </button>
@@ -117,7 +117,7 @@ export default function Comments({ slug }: CommentsProps) {
       {/* Comments List */}
       {loading ? (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto"></div>
         </div>
       ) : comments.length === 0 ? (
         <div className="text-center py-8 text-gray-400">

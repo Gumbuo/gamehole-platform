@@ -107,7 +107,7 @@ export default function Upload() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <p className="text-white text-xl">Loading...</p>
       </div>
     );
@@ -115,12 +115,12 @@ export default function Upload() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-white text-xl mb-4">Please sign in to upload games</p>
           <Link
             href="/dashboard"
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+            className="bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700"
           >
             Go to Dashboard
           </Link>
@@ -130,19 +130,19 @@ export default function Upload() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
             <Link
               href="/dashboard"
-              className="text-purple-400 hover:text-purple-300"
+              className="text-cyan-400 hover:text-cyan-300"
             >
               ← Back to Dashboard
             </Link>
           </div>
 
-          <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-purple-500">
+          <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-cyan-500">
             <h1 className="text-3xl font-bold text-white mb-6">Upload Game</h1>
 
             {/* Security Notice */}
@@ -179,7 +179,7 @@ export default function Upload() {
                   required
                   value={formData.title}
                   onChange={handleTitleChange}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="My Awesome Game"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function Upload() {
                   onChange={(e) =>
                     setFormData({ ...formData, slug: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="my-awesome-game"
                 />
                 <p className="text-gray-400 text-sm mt-1">
@@ -213,7 +213,7 @@ export default function Upload() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="Describe your game..."
                 />
               </div>
@@ -228,7 +228,7 @@ export default function Upload() {
                     setFormData({ ...formData, credits: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                   placeholder="Art by Jane Doe&#10;Music by John Smith&#10;Code by..."
                 />
                 <p className="text-gray-400 text-sm mt-1">
@@ -246,7 +246,7 @@ export default function Upload() {
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="Action">Action</option>
                   <option value="Adventure">Adventure</option>
@@ -273,7 +273,7 @@ export default function Upload() {
                   required
                   accept=".zip"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-cyan-500"
                 />
                 <p className="text-gray-400 text-sm mt-1">
                   Upload a ZIP file containing your game. Must include an index.html file.
@@ -288,7 +288,7 @@ export default function Upload() {
               {uploading && uploadProgress > 0 && (
                 <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-300"
+                    className="bg-gradient-to-r from-cyan-500 to-green-500 h-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -297,7 +297,7 @@ export default function Upload() {
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-cyan-500 to-green-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-cyan-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading
                   ? `Uploading... ${uploadProgress}%`

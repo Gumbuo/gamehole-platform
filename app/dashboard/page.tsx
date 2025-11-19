@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <p className="text-white text-xl">Loading...</p>
       </div>
     );
@@ -65,16 +65,16 @@ export default function Dashboard() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
         <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-purple-500">
+          <div className="max-w-md mx-auto bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-cyan-500">
             <h1 className="text-3xl font-bold text-white mb-4">Developer Dashboard</h1>
             <p className="text-gray-300 mb-6">
               Sign in with GitHub to upload and manage your games.
             </p>
             <button
               onClick={() => signIn("github")}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600"
+              className="w-full bg-gradient-to-r from-cyan-500 to-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-green-600"
             >
               Sign in with GitHub
             </button>
@@ -85,7 +85,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -96,7 +96,7 @@ export default function Dashboard() {
           <div className="flex gap-4">
             <Link
               href="/upload"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600"
+              className="bg-gradient-to-r from-cyan-500 to-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-green-600"
             >
               Upload New Game
             </Link>
@@ -110,7 +110,7 @@ export default function Dashboard() {
         </div>
 
         {/* Games Grid */}
-        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
           <h2 className="text-2xl font-bold text-white mb-4">Your Games</h2>
 
           {loading ? (
@@ -120,7 +120,7 @@ export default function Dashboard() {
               <p className="text-gray-300 mb-4">You haven't uploaded any games yet.</p>
               <Link
                 href="/upload"
-                className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                className="inline-block bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700"
               >
                 Upload Your First Game
               </Link>
@@ -143,7 +143,7 @@ export default function Dashboard() {
                   <div className="mt-4 flex gap-2">
                     <Link
                       href={`/play/${game.slug}`}
-                      className="flex-1 text-center bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                      className="flex-1 text-center bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700"
                     >
                       View
                     </Link>

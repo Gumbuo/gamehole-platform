@@ -80,7 +80,7 @@ export default function AdminPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <p className="text-white text-xl">Loading...</p>
       </div>
     );
@@ -88,12 +88,12 @@ export default function AdminPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-white text-xl mb-4">Please sign in to access admin panel</p>
           <Link
             href="/dashboard"
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+            className="bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700"
           >
             Go to Dashboard
           </Link>
@@ -104,12 +104,12 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 text-xl mb-4">Access Denied - Admin Only</p>
           <Link
             href="/dashboard"
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+            className="bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700"
           >
             Go to Dashboard
           </Link>
@@ -119,7 +119,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-cyan-900 to-gray-900">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -134,7 +134,7 @@ export default function AdminPage() {
           </Link>
         </div>
 
-        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+        <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-cyan-500">
           <h2 className="text-2xl font-bold text-white mb-4">All Games ({games.length})</h2>
 
           <div className="space-y-4">
@@ -149,7 +149,7 @@ export default function AdminPage() {
                     {game.is_featured && (
                       <span className="text-xl" title="Featured">⭐</span>
                     )}
-                    <span className="px-2 py-1 text-xs rounded bg-purple-500 bg-opacity-30 text-purple-300 border border-purple-500">
+                    <span className="px-2 py-1 text-xs rounded bg-cyan-500 bg-opacity-30 text-cyan-300 border border-cyan-500">
                       {game.category}
                     </span>
                   </div>
@@ -167,7 +167,7 @@ export default function AdminPage() {
                 <div className="flex gap-2">
                   <Link
                     href={`/play/${game.slug}`}
-                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                    className="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700"
                   >
                     View
                   </Link>

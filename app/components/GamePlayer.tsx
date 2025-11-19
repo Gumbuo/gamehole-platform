@@ -139,7 +139,7 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
           <div className="text-white text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
             <p>Loading {title}...</p>
           </div>
         </div>
