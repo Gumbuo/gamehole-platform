@@ -55,6 +55,7 @@ export default function Upload() {
       const blob = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
+        addRandomSuffix: true,
         onUploadProgress: ({ loaded, total }) => {
           const progress = Math.round((loaded / total) * 80) + 10; // 10-90%
           setUploadProgress(progress);
