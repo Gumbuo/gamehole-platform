@@ -65,12 +65,21 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
-      // Replace file references in HTML with blob URLs, but handle scripts specially
+      // Create a map of JavaScript file contents for inlining
+      const jsContentMap: Record<string, string> = {};
+      for (const filename of Object.keys(fileMap)) {
+        if (filename.endsWith('.js')) {
+          const file = zip.files[filename];
+          if (file) {
+            jsContentMap[filename] = await file.async("string");
+          }
+        }
+      }
+
+      // Replace file references in HTML with blob URLs (except JS files)
       for (const [filename, blobUrl] of Object.entries(fileMap)) {
         if (filename === 'index.html') continue; // Skip the HTML file itself
-
-        // For JavaScript files, we'll handle them separately to maintain load order
-        if (filename.endsWith('.js')) continue;
+        if (filename.endsWith('.js')) continue; // Skip JS files, we'll inline them
 
         // Replace in src and href attributes for non-JS files
         const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -85,20 +94,18 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
         );
       }
 
-      // Handle JavaScript files: replace script tags to load synchronously from blob URLs
-      for (const [filename, blobUrl] of Object.entries(fileMap)) {
-        if (!filename.endsWith('.js')) continue;
-
+      // Inline JavaScript files to ensure sequential execution
+      for (const [filename, jsContent] of Object.entries(jsContentMap)) {
         const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Replace <script src="file.js"></script> with the blob URL, preserving the sync loading
+        // Replace <script src="file.js"></script> with inline script
         htmlContent = htmlContent.replace(
-          new RegExp(`<script([^>]*?)src=["']${escapedFilename}["']([^>]*?)></script>`, 'gi'),
-          `<script$1src="${blobUrl}"$2></script>`
+          new RegExp(`<script([^>]*?)src=["']${escapedFilename}["']([^>]*?)>\\s*</script>`, 'gi'),
+          `<script$1$2>${jsContent}</script>`
         );
         // Also handle paths with directories
         htmlContent = htmlContent.replace(
-          new RegExp(`<script([^>]*?)src=["'][^"']*\\/${escapedFilename}["']([^>]*?)></script>`, 'gi'),
-          `<script$1src="${blobUrl}"$2></script>`
+          new RegExp(`<script([^>]*?)src=["'][^"']*\\/${escapedFilename}["']([^>]*?)>\\s*</script>`, 'gi'),
+          `<script$1$2>${jsContent}</script>`
         );
       }
 
