@@ -89,35 +89,67 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
           const originalXHROpen = XMLHttpRequest.prototype.open;
           const fileMap = ${JSON.stringify(fileMap)};
 
+          // Debug: Log available files once
+          console.log('[GamePlayer DEBUG] Total files in ZIP:', Object.keys(fileMap).length);
+          console.log('[GamePlayer DEBUG] Sample files:', Object.keys(fileMap).slice(0, 20));
+
           // Helper function to find matching blob URL
           function findBlobUrl(path) {
+            console.log('[GamePlayer DEBUG] Looking for:', path);
+
             // Try exact match first
-            if (fileMap[path]) return fileMap[path];
+            if (fileMap[path]) {
+              console.log('[GamePlayer DEBUG] ✓ Exact match found');
+              return fileMap[path];
+            }
 
             // Try just the filename
             const filename = path.split('/').pop().split('?')[0];
-            if (fileMap[filename]) return fileMap[filename];
+            console.log('[GamePlayer DEBUG] Extracted filename:', filename);
+
+            if (fileMap[filename]) {
+              console.log('[GamePlayer DEBUG] ✓ Direct filename match found');
+              return fileMap[filename];
+            }
 
             // Fix double extension issue (file.png.png -> file.png)
             if (filename.includes('.png.png')) {
               const fixedFilename = filename.replace('.png.png', '.png');
-              if (fileMap[fixedFilename]) return fileMap[fixedFilename];
+              console.log('[GamePlayer DEBUG] Trying fixed .png.png ->', fixedFilename);
+              if (fileMap[fixedFilename]) {
+                console.log('[GamePlayer DEBUG] ✓ Fixed extension match found');
+                return fileMap[fixedFilename];
+              }
             }
             if (filename.includes('.jpg.jpg')) {
               const fixedFilename = filename.replace('.jpg.jpg', '.jpg');
-              if (fileMap[fixedFilename]) return fileMap[fixedFilename];
+              console.log('[GamePlayer DEBUG] Trying fixed .jpg.jpg ->', fixedFilename);
+              if (fileMap[fixedFilename]) {
+                console.log('[GamePlayer DEBUG] ✓ Fixed extension match found');
+                return fileMap[fixedFilename];
+              }
             }
 
             // Try all keys that end with the filename
+            console.log('[GamePlayer DEBUG] Trying endsWith match...');
             for (const key in fileMap) {
               if (key.endsWith(filename) || key.endsWith('/' + filename)) {
+                console.log('[GamePlayer DEBUG] ✓ endsWith match found:', key);
                 return fileMap[key];
               }
               // Also try with fixed extension
               const withoutDoubleExt = filename.replace(/\.(png|jpg|jpeg|gif|mp3|wav|ogg)\.\\1$/, '.$1');
-              if (key.endsWith(withoutDoubleExt) || key.endsWith('/' + withoutDoubleExt)) {
+              if (withoutDoubleExt !== filename && (key.endsWith(withoutDoubleExt) || key.endsWith('/' + withoutDoubleExt))) {
+                console.log('[GamePlayer DEBUG] ✓ endsWith match with fixed extension found:', key);
                 return fileMap[key];
               }
+            }
+
+            console.log('[GamePlayer DEBUG] ✗ NO MATCH FOUND');
+            // Log files that contain part of the filename for debugging
+            const partialMatches = Object.keys(fileMap).filter(k => k.includes(filename.split('.')[0]));
+            if (partialMatches.length > 0) {
+              console.log('[GamePlayer DEBUG] Partial matches found:', partialMatches.slice(0, 5));
             }
 
             return null;
