@@ -44,7 +44,17 @@ export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
       for (const filename of files) {
         const file = zip.files[filename];
         if (!file.dir) {
-          const blob = await file.async("blob");
+          const data = await file.async("arraybuffer");
+          // Determine MIME type based on extension
+          let mimeType = "application/octet-stream";
+          if (filename.endsWith(".js")) mimeType = "text/javascript";
+          else if (filename.endsWith(".wasm")) mimeType = "application/wasm";
+          else if (filename.endsWith(".html")) mimeType = "text/html";
+          else if (filename.endsWith(".css")) mimeType = "text/css";
+          else if (filename.endsWith(".png")) mimeType = "image/png";
+          else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) mimeType = "image/jpeg";
+
+          const blob = new Blob([data], { type: mimeType });
           const blobUrl = URL.createObjectURL(blob);
           fileMap[filename] = blobUrl;
         }
@@ -53,27 +63,30 @@ export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
-      // Replace file paths with blob URLs
-      // Handle both quoted and unquoted references
-      Object.keys(fileMap).forEach((filename) => {
-        const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Inject fetch interceptor script at the beginning
+      const interceptorScript = `
+        <script>
+          const originalFetch = window.fetch;
+          const fileMap = ${JSON.stringify(fileMap)};
 
-        // Replace various patterns: "filename", 'filename', src="filename", href="filename", etc.
-        const patterns = [
-          new RegExp(`["']${escapedFilename}["']`, "g"),
-          new RegExp(`${escapedFilename}`, "g"),
-        ];
+          window.fetch = function(url, options) {
+            // Extract filename from URL
+            const urlStr = typeof url === 'string' ? url : url.toString();
+            const filename = urlStr.split('/').pop().split('?')[0];
 
-        patterns.forEach((regex) => {
-          htmlContent = htmlContent.replace(regex, (match) => {
-            // Preserve quotes if they exist
-            if (match.startsWith('"') || match.startsWith("'")) {
-              return `"${fileMap[filename]}"`;
+            // If we have this file in our map, use the blob URL
+            if (fileMap[filename]) {
+              return originalFetch(fileMap[filename], options);
             }
-            return fileMap[filename];
-          });
-        });
-      });
+
+            // Otherwise, use original fetch
+            return originalFetch(url, options);
+          };
+        </script>
+      `;
+
+      // Insert interceptor right after <head> tag
+      htmlContent = htmlContent.replace(/<head>/i, '<head>' + interceptorScript);
 
       // Create a blob URL for the modified HTML
       const htmlBlob = new Blob([htmlContent], { type: "text/html" });
