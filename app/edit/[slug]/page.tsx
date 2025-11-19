@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { upload } from "@vercel/blob/client";
 
 export default function EditGame({ params }: { params: Promise<{ slug: string }> }) {
   const { data: session, status } = useSession();
@@ -68,21 +69,20 @@ export default function EditGame({ params }: { params: Promise<{ slug: string }>
       // If a new game file is uploaded, upload it first
       if (gameFile) {
         setUploading(true);
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", gameFile);
 
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: uploadFormData,
+        // Add timestamp to filename to avoid conflicts
+        const timestamp = Date.now();
+        const fileExt = gameFile.name.substring(gameFile.name.lastIndexOf('.'));
+        const fileName = gameFile.name.substring(0, gameFile.name.lastIndexOf('.'));
+        const uniqueFileName = `${fileName}-${timestamp}${fileExt}`;
+
+        // Upload file directly to Vercel Blob (client-side)
+        const blob = await upload(uniqueFileName, gameFile, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
         });
 
-        const uploadResult = await uploadRes.json();
-
-        if (!uploadRes.ok) {
-          throw new Error(uploadResult.error || "Failed to upload game file");
-        }
-
-        newBlobUrl = uploadResult.blobUrl;
+        newBlobUrl = blob.url;
         setUploading(false);
       }
 
