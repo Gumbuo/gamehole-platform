@@ -65,11 +65,14 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
       // Get index.html content
       let htmlContent = await indexHtml.async("string");
 
-      // Replace file references in HTML with blob URLs
+      // Replace file references in HTML with blob URLs, but handle scripts specially
       for (const [filename, blobUrl] of Object.entries(fileMap)) {
         if (filename === 'index.html') continue; // Skip the HTML file itself
 
-        // Replace in src and href attributes
+        // For JavaScript files, we'll handle them separately to maintain load order
+        if (filename.endsWith('.js')) continue;
+
+        // Replace in src and href attributes for non-JS files
         const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         htmlContent = htmlContent.replace(
           new RegExp(`(src|href)=["']${escapedFilename}["']`, 'gi'),
@@ -79,6 +82,23 @@ export default function GamePlayer({ zipUrl, title, slug }: GamePlayerProps) {
         htmlContent = htmlContent.replace(
           new RegExp(`(src|href)=["'][^"']*\\/${escapedFilename}["']`, 'gi'),
           `$1="${blobUrl}"`
+        );
+      }
+
+      // Handle JavaScript files: replace script tags to load synchronously from blob URLs
+      for (const [filename, blobUrl] of Object.entries(fileMap)) {
+        if (!filename.endsWith('.js')) continue;
+
+        const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Replace <script src="file.js"></script> with the blob URL, preserving the sync loading
+        htmlContent = htmlContent.replace(
+          new RegExp(`<script([^>]*?)src=["']${escapedFilename}["']([^>]*?)></script>`, 'gi'),
+          `<script$1src="${blobUrl}"$2></script>`
+        );
+        // Also handle paths with directories
+        htmlContent = htmlContent.replace(
+          new RegExp(`<script([^>]*?)src=["'][^"']*\\/${escapedFilename}["']([^>]*?)></script>`, 'gi'),
+          `<script$1src="${blobUrl}"$2></script>`
         );
       }
 
