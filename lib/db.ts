@@ -1,4 +1,6 @@
-import { sql } from "@vercel/postgres";
+import { neon } from "@neondatabase/serverless";
+
+const sql = neon(process.env.DATABASE_URL!);
 
 export async function initializeDatabase() {
   try {
@@ -52,7 +54,7 @@ export async function initializeDatabase() {
 
 export async function getUser(email: string) {
   const result = await sql`
-    SELECT * FROM users WHERE email = ${email}
+    SELECT * FROM users WHERE email = \${email}
   `;
   return result.rows[0];
 }
@@ -60,7 +62,7 @@ export async function getUser(email: string) {
 export async function getUserGames(userId: number) {
   const result = await sql`
     SELECT * FROM games
-    WHERE user_id = ${userId}
+    WHERE user_id = \${userId}
     ORDER BY created_at DESC
   `;
   return result.rows;
@@ -71,7 +73,7 @@ export async function getGame(slug: string) {
     SELECT g.*, u.name as author_name, u.avatar as author_avatar
     FROM games g
     JOIN users u ON g.user_id = u.id
-    WHERE g.slug = ${slug} AND g.is_published = true
+    WHERE g.slug = \${slug} AND g.is_published = true
   `;
   return result.rows[0];
 }
@@ -83,7 +85,7 @@ export async function getAllGames(limit = 50) {
     JOIN users u ON g.user_id = u.id
     WHERE g.is_published = true
     ORDER BY g.created_at DESC
-    LIMIT ${limit}
+    LIMIT \${limit}
   `;
   return result.rows;
 }
@@ -92,7 +94,7 @@ export async function incrementGameViews(slug: string) {
   await sql`
     UPDATE games
     SET views = views + 1
-    WHERE slug = ${slug}
+    WHERE slug = \${slug}
   `;
 }
 
@@ -100,6 +102,6 @@ export async function incrementGamePlays(slug: string) {
   await sql`
     UPDATE games
     SET plays = plays + 1
-    WHERE slug = ${slug}
+    WHERE slug = \${slug}
   `;
 }
