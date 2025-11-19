@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import GamePlayer from "@/components/GamePlayer";
+import GamePlayer from "@/app/components/GamePlayer";
 
 async function getGame(slug: string) {
   const res = await fetch(
