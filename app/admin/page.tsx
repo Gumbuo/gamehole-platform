@@ -52,6 +52,32 @@ export default function AdminPage() {
     }
   };
 
+  const handleDelete = async (slug: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/delete-game", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, adminOverride: true }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete game");
+      }
+
+      // Refresh games list
+      fetchGames();
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+      console.error("Delete error:", error);
+    }
+  };
+
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
@@ -154,6 +180,12 @@ export default function AdminPage() {
                     }`}
                   >
                     {game.is_featured ? "⭐ Featured" : "Feature"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(game.slug, game.title)}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                  >
+                    Delete
                   </button>
                 </div>
               </div>

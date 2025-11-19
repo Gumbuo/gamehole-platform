@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sql } from "@/lib/db";
+import { sql, isAdmin } from "@/lib/db";
 import { del } from "@vercel/blob";
 
 export async function DELETE(request: NextRequest) {
@@ -13,13 +13,25 @@ export async function DELETE(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { slug } = body;
+    const { slug, adminOverride } = body;
 
     if (!slug) {
       return NextResponse.json(
         { error: "Missing slug" },
         { status: 400 }
       );
+    }
+
+    // Check if this is an admin override request
+    let isAdminUser = false;
+    if (adminOverride) {
+      isAdminUser = await isAdmin(session.user.email);
+      if (!isAdminUser) {
+        return NextResponse.json(
+          { error: "Admin access required" },
+          { status: 403 }
+        );
+      }
     }
 
     // Get user from database
@@ -44,8 +56,8 @@ export async function DELETE(request: NextRequest) {
 
     const game = gameResult[0];
 
-    // Verify the user owns this game
-    if (game.user_id !== userId) {
+    // Verify the user owns this game (skip if admin override)
+    if (!isAdminUser && game.user_id !== userId) {
       return NextResponse.json(
         { error: "You don't have permission to delete this game" },
         { status: 403 }
