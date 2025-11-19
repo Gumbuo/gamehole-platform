@@ -2,6 +2,45 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import GamePlayer from "@/app/components/GamePlayer";
 import RatingStars from "@/app/components/RatingStars";
+import Comments from "@/app/components/Comments";
+import ShareButtons from "@/app/components/ShareButtons";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const game = await getGame(params.slug);
+
+  if (\!game) {
+    return {
+      title: "Game Not Found",
+    };
+  }
+
+  const url = \;
+  const description = game.description || \;
+
+  return {
+    title: \,
+    description: description,
+    openGraph: {
+      title: game.title,
+      description: description,
+      url: url,
+      siteName: "GameHole.ink",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: game.title,
+      description: description,
+      creator: \,
+    },
+  };
+}
+
+
 
 async function getGame(slug: string) {
   const res = await fetch(
@@ -77,6 +116,16 @@ export default async function PlayGame(props: {
           <p className="text-gray-300">
             Click on the game above to start playing. Use your keyboard and mouse to control the game.
           </p>
+        </div>
+
+        {/* Share Buttons */}
+        <div className="mt-6">
+          <ShareButtons title={game.title} slug={params.slug} />
+        </div>
+
+        {/* Comments */}
+        <div className="mt-6">
+          <Comments slug={params.slug} />
         </div>
       </div>
     </div>

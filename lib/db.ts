@@ -13,8 +13,19 @@ export async function initializeDatabase() {
         name VARCHAR(255),
         avatar TEXT,
         github_id VARCHAR(255),
+        is_admin BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `;
+
+    // Add is_admin column if it doesn't exist
+    await sql`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='is_admin') THEN
+          ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT false;
+        END IF;
+      END $$;
     `;
 
     // Create games table
@@ -71,6 +82,24 @@ export async function initializeDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_games_user_id ON games(user_id)
     `;
+
+
+    // Create comments table
+    await sql`
+      CREATE TABLE IF NOT EXISTS comments (
+        id SERIAL PRIMARY KEY,
+        game_id INTEGER REFERENCES games(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Create index on game_id for faster comment lookups
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_comments_game_id ON comments(game_id)
+    `;
+
 
     console.log("Database initialized successfully");
     return { success: true };
@@ -202,4 +231,58 @@ export async function getCategories() {
     'Casual',
     'Other'
   ];
+}
+
+export async function getGameComments(gameId: number) {
+  const result = await sql`
+    SELECT c.*, u.name as user_name, u.avatar as user_avatar
+    FROM comments c
+    JOIN users u ON c.user_id = u.id
+    WHERE c.game_id = ${gameId}
+    ORDER BY c.created_at DESC
+  `;
+  return result;
+}
+
+export async function addComment(gameId: number, userId: number, content: string) {
+  const result = await sql`
+    INSERT INTO comments (game_id, user_id, content)
+    VALUES (${gameId}, ${userId}, ${content})
+    RETURNING *
+  `;
+  return result[0];
+}
+
+export async function deleteComment(commentId: number, userId: number) {
+  await sql`
+    DELETE FROM comments
+    WHERE id = ${commentId} AND user_id = ${userId}
+  `;
+}
+
+export async function isAdmin(email: string): Promise<boolean> {
+  const result = await sql`
+    SELECT is_admin FROM users WHERE email = ${email}
+  `;
+  return result.length > 0 && result[0].is_admin;
+}
+
+export async function toggleGameFeatured(slug: string) {
+  await sql`
+    UPDATE games
+    SET is_featured = NOT is_featured
+    WHERE slug = ${slug}
+    RETURNING is_featured
+  `;
+}
+
+export async function getAllGamesForAdmin() {
+  const result = await sql`
+    SELECT g.*, u.name as author_name, u.email as author_email,
+           CASE WHEN g.rating_count > 0 THEN ROUND(g.rating_sum::decimal / g.rating_count, 1) ELSE 0 END as average_rating
+    FROM games g
+    JOIN users u ON g.user_id = u.id
+    ORDER BY g.created_at DESC
+  `;
+  return result;
 }
