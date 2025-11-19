@@ -54,10 +54,25 @@ export default function GamePlayer({ zipUrl, title }: GamePlayerProps) {
       let htmlContent = await indexHtml.async("string");
 
       // Replace file paths with blob URLs
+      // Handle both quoted and unquoted references
       Object.keys(fileMap).forEach((filename) => {
         const escapedFilename = filename.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const regex = new RegExp(escapedFilename, "g");
-        htmlContent = htmlContent.replace(regex, fileMap[filename]);
+
+        // Replace various patterns: "filename", 'filename', src="filename", href="filename", etc.
+        const patterns = [
+          new RegExp(`["']${escapedFilename}["']`, "g"),
+          new RegExp(`${escapedFilename}`, "g"),
+        ];
+
+        patterns.forEach((regex) => {
+          htmlContent = htmlContent.replace(regex, (match) => {
+            // Preserve quotes if they exist
+            if (match.startsWith('"') || match.startsWith("'")) {
+              return `"${fileMap[filename]}"`;
+            }
+            return fileMap[filename];
+          });
+        });
       });
 
       // Create a blob URL for the modified HTML
