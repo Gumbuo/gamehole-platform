@@ -116,6 +116,16 @@ export default async function PlayGame(props: {
           </p>
         </div>
 
+        {/* Credits */}
+        {game.credits && (
+          <div className="mt-6 bg-gray-800 bg-opacity-50 p-6 rounded-lg border border-purple-500">
+            <h2 className="text-2xl font-bold text-white mb-4">Credits</h2>
+            <div className="text-gray-300 whitespace-pre-line">
+              {game.credits}
+            </div>
+          </div>
+        )}
+
         {/* Share Buttons */}
         <div className="mt-6">
           <ShareButtons title={game.title} slug={params.slug} />

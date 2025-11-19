@@ -18,6 +18,7 @@ export default function Upload() {
     description: "",
     slug: "",
     category: "Other",
+    credits: "",
   });
 
   const [file, setFile] = useState<File | null>(null);
@@ -75,6 +76,7 @@ export default function Upload() {
           description: formData.description,
           slug: formData.slug,
           category: formData.category,
+          credits: formData.credits,
           blobUrl: blob.url,
         }),
       });
@@ -189,6 +191,24 @@ export default function Upload() {
                   className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
                   placeholder="Describe your game..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Credits
+                </label>
+                <textarea
+                  value={formData.credits}
+                  onChange={(e) =>
+                    setFormData({ ...formData, credits: e.target.value })
+                  }
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
+                  placeholder="Art by Jane Doe&#10;Music by John Smith&#10;Code by..."
+                />
+                <p className="text-gray-400 text-sm mt-1">
+                  Credit pixel artists, musicians, and collaborators (optional)
+                </p>
               </div>
 
               <div>

@@ -70,6 +70,9 @@ export async function initializeDatabase() {
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='is_featured') THEN
           ALTER TABLE games ADD COLUMN is_featured BOOLEAN DEFAULT false;
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='games' AND column_name='credits') THEN
+          ALTER TABLE games ADD COLUMN credits TEXT;
+        END IF;
       END $$;
     `;
 

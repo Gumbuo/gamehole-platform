@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, slug, category, blobUrl } = body;
+    const { title, description, slug, category, credits, blobUrl } = body;
 
     if (!title || !slug || !blobUrl) {
       return NextResponse.json(
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
 
     // Save game to database
     const result = await sql`
-      INSERT INTO games (user_id, title, description, slug, blob_url)
-      VALUES (${userId}, ${title}, ${description}, ${slug}, ${blobUrl})
+      INSERT INTO games (user_id, title, description, slug, blob_url, category, credits)
+      VALUES (${userId}, ${title}, ${description}, ${slug}, ${blobUrl}, ${category || 'Other'}, ${credits || null})
       RETURNING *
     `;
 
