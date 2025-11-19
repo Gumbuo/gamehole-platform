@@ -1,105 +1,94 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { upload } from "@vercel/blob/client";
 
-export default function Upload() {
+export default function EditGame({ params }: { params: { slug: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    slug: "",
     category: "Other",
     credits: "",
   });
 
-  const [file, setFile] = useState<File | null>(null);
+  useEffect(() => {
+    if (session) {
+      fetchGame();
+    }
+  }, [session, params.slug]);
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  };
+  const fetchGame = async () => {
+    try {
+      const res = await fetch(`/api/games/${params.slug}`);
+      const data = await res.json();
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData({
-      ...formData,
-      title,
-      slug: generateSlug(title),
-    });
+      if (res.ok && data.game) {
+        setFormData({
+          title: data.game.title || "",
+          description: data.game.description || "",
+          category: data.game.category || "Other",
+          credits: data.game.credits || "",
+        });
+      } else {
+        setError("Game not found");
+      }
+    } catch (err) {
+      console.error("Failed to fetch game:", err);
+      setError("Failed to load game");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setUploading(true);
-    setUploadProgress(0);
-
-    if (!file) {
-      setError("Please select a file to upload");
-      setUploading(false);
-      return;
-    }
+    setSuccess(false);
+    setSaving(true);
 
     try {
-      // Upload file directly to Vercel Blob (client-side)
-      setUploadProgress(10);
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-        addRandomSuffix: true,
-        onUploadProgress: ({ loaded, total }) => {
-          const progress = Math.round((loaded / total) * 80) + 10; // 10-90%
-          setUploadProgress(progress);
-        },
-      });
-
-      setUploadProgress(90);
-
-      // Save game metadata to database
-      const res = await fetch("/api/save-game", {
-        method: "POST",
+      const res = await fetch("/api/update-game", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          slug: params.slug,
           title: formData.title,
           description: formData.description,
-          slug: formData.slug,
           category: formData.category,
           credits: formData.credits,
-          blobUrl: blob.url,
         }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error || "Failed to save game");
+        throw new Error(result.error || "Failed to update game");
       }
 
-      setUploadProgress(100);
-      router.push("/dashboard");
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
     } catch (err: any) {
-      console.error("Upload error:", err);
-      setError(err.message || "Upload failed");
+      console.error("Update error:", err);
+      setError(err.message || "Update failed");
     } finally {
-      setUploading(false);
-      setUploadProgress(0);
+      setSaving(false);
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
         <p className="text-white text-xl">Loading...</p>
@@ -111,7 +100,7 @@ export default function Upload() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-white text-xl mb-4">Please sign in to upload games</p>
+          <p className="text-white text-xl mb-4">Please sign in to edit games</p>
           <Link
             href="/dashboard"
             className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
@@ -137,11 +126,17 @@ export default function Upload() {
           </div>
 
           <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border border-purple-500">
-            <h1 className="text-3xl font-bold text-white mb-6">Upload Game</h1>
+            <h1 className="text-3xl font-bold text-white mb-6">Edit Game</h1>
 
             {error && (
               <div className="bg-red-500 bg-opacity-20 border border-red-500 text-red-200 p-4 rounded-lg mb-6">
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-500 bg-opacity-20 border border-green-500 text-green-200 p-4 rounded-lg mb-6">
+                Game updated successfully! Redirecting...
               </div>
             )}
 
@@ -154,29 +149,12 @@ export default function Upload() {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={handleTitleChange}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
                   placeholder="My Awesome Game"
                 />
-              </div>
-
-              <div>
-                <label className="block text-white font-semibold mb-2">
-                  Slug (URL) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.slug}
-                  onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
-                  placeholder="my-awesome-game"
-                />
-                <p className="text-gray-400 text-sm mt-1">
-                  Your game will be available at: gamehole.ink/play/{formData.slug}
-                </p>
               </div>
 
               <div>
@@ -240,45 +218,21 @@ export default function Upload() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-white font-semibold mb-2">
-                  Game File (ZIP) *
-                </label>
-                <input
-                  type="file"
-                  required
-                  accept=".zip"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-purple-500"
-                />
-                <p className="text-gray-400 text-sm mt-1">
-                  Upload a ZIP file containing your game. Must include an index.html file.
-                </p>
-                {file && (
-                  <p className="text-gray-300 text-sm mt-2">
-                    Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                  </p>
-                )}
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="flex-1 bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 text-center"
+                >
+                  Cancel
+                </Link>
               </div>
-
-              {uploading && uploadProgress > 0 && (
-                <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={uploading}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploading
-                  ? `Uploading... ${uploadProgress}%`
-                  : "Upload Game"}
-              </button>
             </form>
           </div>
         </div>

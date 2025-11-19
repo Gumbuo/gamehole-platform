@@ -147,6 +147,12 @@ export default function Dashboard() {
                     >
                       View
                     </Link>
+                    <Link
+                      href={`/edit/${game.slug}`}
+                      className="flex-1 text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Edit
+                    </Link>
                     <button
                       onClick={() => handleDelete(game.slug, game.title)}
                       className="flex-1 text-center bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
